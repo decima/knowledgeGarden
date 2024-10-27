@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!{% endblock %}
+
+{% block body %}
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <div class="md:w-2/12 bg-base-300 h-screen md:sticky top-0">
+            <nav id="mainMenu" class=" p-4 ">
+                <ul id="toc-details" class="p-2 menu">
+                    {% for item in fileList %}
+                        {{ _self.toc(item) }}
+                    {% endfor %}
+                </ul>
+            </nav>
+        </div>
+
+        <div class="md:w-2/12 bg-base-200 h-screen md:sticky top-0">
+
+            <nav id="contextualMenu">
+
+                <ul class="flex flex-col h-screen max-h-screen flex flex-row p-4 box-border">
+                    <li>
+                        <a onclick="window.scrollTo(0, 0);"><i class="ph ph-arrow-line-up"></i><span>back to top</span></a>
+                    </li>
+                    <li>
+                        <a><i class="ph ph-presentation-chart"></i><span>Presentation</span></a>
+                    </li>
+                    <li><a><i class="ph ph-tree-view"></i><span>Table of content</span></a></li>
+                    <li class="overflow-auto">
+                        <ul id="toc-details" class="p-2 menu">
+                            {% for item in page.tableOfContent %}
+                                {{ _self.toc(item) }}
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+
+            </nav>
+        </div>
+        <main class="md:w-8/12 p-4">
+            <h1 class="text-2xl uppercase font-black" id="__top">
+                {{ page.title }}
+            </h1>
+            <div class="layout prose max-w-none p-8">
+                {{ page.content|raw }}
+            </div>
+        </main>
+    </div>
+
+{% endblock %}
+{% macro toc(item) %}
+    <li>
+        <a id="{{ item.link }}" href="{{ item.link }}" class="toc-item {{ item.selected?"active":"" }}">{{ item.content|raw }}</a>
+        {% if item.children %}
+            <ul>
+                {% for child in item.children %}
+                    {{ _self.toc(child) }}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </li>
+{% endmacro %}

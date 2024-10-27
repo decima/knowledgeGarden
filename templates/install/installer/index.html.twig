@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello InstallerController!{% endblock %}
+
+{% block body %}
+    <div>
+        {{ form_start(form) }}
+
+        <fieldset>
+            <legend>General</legend>
+
+            <label class="input input-bordered flex items-center gap-2">
+                {{ form_label(form.title) }}
+                {{ form_widget(form.title) }}
+            </label>
+        </fieldset>
+
+        {% for i,user in form.users %}
+
+            <fieldset>
+                <legend>{{ configuration.users[i].username }}</legend>
+                <label class="input input-bordered flex items-center gap-2">
+                    {{ form_label(user.username) }}
+                    {{ form_widget(user.username) }}
+                </label>
+                <label class="input input-bordered flex items-center gap-2">
+                    {{ form_label(user.clearPassword) }}
+                    {{ form_widget(user.clearPassword) }}
+                </label>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <label class="input input-bordered flex items-center gap-2">
+                        {{ form_label(user.permissions) }}
+                        {{ form_widget(user.permissions) }}
+                    </label>
+                {% endif %}
+            </fieldset>
+        {% endfor %}
+
+
+        {{ form_rest(form) }}
+        <button class="btn btn-primary" type="submit">Save</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

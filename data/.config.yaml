@@ -1,0 +1,8 @@
+title: garden
+copyright: ''
+users:
+  -
+    username: decima
+    password: $2y$13$zwS7qW2BeW/mn.8RG46Qxe5Q6whpy0/5s/gaJZiED8eu6Wsjd7Iha
+    permissions:
+      - ROLE_ADMIN

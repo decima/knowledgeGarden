@@ -1,0 +1,6 @@
+<div class="hidden alert alert-info alert-warning alert-error"></div>
+
+<div role="alert" class="alert alert-[[_var v=param1 default=info/]]">
+[[_slot/]]
+[[_var v=msg/]]
+</div>

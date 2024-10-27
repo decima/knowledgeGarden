@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    Your configuration located in data folder, .config.yaml seems out of date and cannot be recovered. You should reconfigure it by
+    making a backup of your .config.yaml file and remove it.
+
+    <pre style="background: lightgrey;padding: 10px;">{{ reason }}</pre>
+{% endblock %}
+

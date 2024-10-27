@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Page not found</h1>
+
+    <p>
+        The requested page couldn't be located.
+        <a href="{{ path('app_home') }}">Go back home</a>
+    </p>
+    {% if currentPage is defined %}
+        <a href="{{ path('app_render',{path: currentPage, edit: true}) }}">Create a new Page</a>
+    {% endif %}
+{% endblock %}
