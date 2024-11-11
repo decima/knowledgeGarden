@@ -2,6 +2,9 @@
 
 namespace App\Services\FileManager;
 
+set_time_limit(6);
+
+
 use App\Services\Markdown\MarkdownMetadata;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Exception\IOException;
@@ -26,7 +29,16 @@ class FileExplorer
 
     }
 
-    public function absolutePath($path, bool $allowedDotFiles = false)
+    public function relativePath($absolute)
+    {
+        $path = Path::makeRelative($absolute, $this->rootPath);
+        if (str_starts_with($path, "..")) {
+            return "/";
+        }
+        return $path;
+    }
+
+    public function absolutePath($path = "/", bool $allowedDotFiles = false)
     {
         if (!str_starts_with($path, "/")) $path = "/" . $path;
         if (!Path::isBasePath($this->rootPath, $this->rootPath . $path)) {
@@ -40,18 +52,20 @@ class FileExplorer
         return Path::makeAbsolute($this->rootPath . $path, $this->rootPath);
     }
 
-    public function getFile(string $path, bool $allowDotFiles = false): string
+    public function getFileContent(string $path, bool $allowDotFiles = false, $ignoreNotMarkdownException = false): string
     {
 
         $fs = new Filesystem();
         $fullPath = $this->absolutePath($path, $allowDotFiles);
         if (is_dir($fullPath)) {
             try {
-                return $this->getFile($path . "/readme.md");
+                return $this->getFileContent($path . "/readme.md");
             } catch (\Exception $exception) {
             }
+        } elseif ($fs->exists($fullPath) && !str_ends_with($fullPath, '.md') && !$ignoreNotMarkdownException) {
+            throw new NoMarkdownException($fullPath);
         } elseif (!$fs->exists($fullPath) && !str_ends_with($fullPath, ".md")) {
-            return $this->getFile($path . ".md", $allowDotFiles);
+            return $this->getFileContent($path . ".md", $allowDotFiles);
         }
         return $fs->readFile($fullPath);
 
@@ -78,6 +92,9 @@ class FileExplorer
 
         $files = [];
         foreach ($this->listFiles($path) as $path => $file) {
+            if (!$file->isDir() && $file->getExtension() !== "md") {
+                continue;
+            }
             /**
              * @var \SplFileObject $file
              */
@@ -89,28 +106,82 @@ class FileExplorer
                 continue;
             }
 
+
             $files[$relative] = [
                 "link" => $this->router->generate("app_render", ["path" => $relative]),
                 "file" => $file,
                 "content" => $file->getFilename(),
                 "children" => [],
                 "selected" => $relative == $currentPath,
+                "isDir" => $file->isDir(),
+                "metadata" => [],
             ];
             /**
              * @var \SplFileInfo $file
              */
             if ($file->isDir()) {
+                if (file_exists($file->getRealPath() . "/readme.md")) {
+                    $files[$relative]["metadata"] = $this->getMetadataFromFile($file->getRealPath() . "/readme.md");
+                    $files[$relative]["content"] = $files[$relative]["metadata"]["title"] ?? $files[$relative]["content"];
+                }
                 $files[$relative]["children"] = $this->listTreeFiles($relative, $currentPath);
             } else {
-                $files[$relative]["content"] = $this->cache->get($relative . ".title", function (ItemInterface $item) use ($relative, $files) {
-                    $item->expiresAfter(10);
-                    $content = $this->getFile($relative);
-                    $meta = MarkdownMetadata::extract($content);
-                    return $meta["title"] ?? $files[$relative]["content"];
-                });
+                $files[$relative]["metadata"] = $this->getMetadataFromFile($file->getRealPath());
+                $files[$relative]["content"] = $files[$relative]["metadata"]["title"] ?? $files[$relative]["content"];
 
             }
         }
+        usort($files, fn($a, $b) => $a["content"] <=> $b["content"]);
         return $files;
+    }
+
+    private function getMetadataFromFile($absolutePath)
+    {
+        dump($absolutePath);
+        return MarkdownMetadata::extractFromFileInfo(new \SplFileInfo($absolutePath));
+        return $this->cache->get($absolutePath . ".metadata", function (ItemInterface $item) use ($absolutePath) {
+            $item->expiresAfter(30);
+
+        });
+    }
+
+    private function getMetadataFromRelativeFile($relativePath)
+    {
+        return $this->getMetadataFromFile($this->absolutePath($relativePath));
+    }
+
+    public function getFullSiteContent(): iterable
+    {
+        $finder = new Finder();
+// find all files in the current directory
+        $finder->in($this->absolutePath());
+        foreach ($finder as $file) {
+            $path = $file->getRelativePathname();
+            if (str_starts_with($path, "_")) {
+                continue;
+            }
+            if (!$file->isDir() && $file->getExtension() !== "md") {
+                continue;
+            }
+            $f = new File();
+            $f->path = "/" . $path;
+            $f->filename = $file->getFilename();
+            if ($file->isDir() && file_exists($file->getRealPath() . "/readme.md")) {
+                $path = $path . "/readme.md";
+                $f->content = $this->getFileContent($path);
+                $f->metadata = MarkdownMetadata::extract($f->content);
+
+            } else if (!$file->isDir()) {
+                $f->content = $this->getFileContent($path);
+                $f->metadata = MarkdownMetadata::extract($f->content);
+            }
+
+            if ($file->getFilename() === "readme.md") {
+                continue;
+            }
+
+
+            yield $f;
+        }
     }
 }

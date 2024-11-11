@@ -1,0 +1,15 @@
+#docker run -it --rm \
+#-p 7700:7700 \
+#-e MEILI_MASTER_KEY='MASTER_KEY'\
+#-v $(pwd)/meili_data:/meili_data \
+#getmeili/meilisearch:v1.11
+
+services:
+    meilisearch:
+        image: getmeili/meilisearch:v1.11
+        ports:
+            - 7700:7700
+        env_file:
+            - .env
+        volumes:
+            - ./var/meili:/meili_data

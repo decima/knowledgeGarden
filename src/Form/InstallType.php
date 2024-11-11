@@ -18,7 +18,9 @@ class InstallType extends AbstractType
             ->add('title')
             ->add('users', CollectionType::class, [
                 "entry_type" => UserRegisterType::class,
-            ]);
+            ])
+            ->add('searchEngine', SearchEngineFormType::class)
+            ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

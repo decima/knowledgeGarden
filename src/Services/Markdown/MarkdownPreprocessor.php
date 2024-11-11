@@ -124,10 +124,8 @@ class MarkdownPreprocessor
         $tryEvaluate = function ($condition, $args, $default = null) {
             try {
                 return $this->expressionLanguage->evaluate($condition, $args);
-            } catch (Exception) {
-            }
+            } catch (Exception) {}
             return $default;
-
         };
 
         if (file_exists(__DIR__ . "/builtins/$templateName")) {

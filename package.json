@@ -8,6 +8,8 @@
         "postcss-loader": "^8.1.0",
         "regenerator-runtime": "^0.13.9",
         "tailwindcss": "^3.4.14",
+        "ts-loader": "^9.0.0",
+        "typescript": "^5.6.3",
         "webpack": "^5.74.0",
         "webpack-cli": "^4.10.0",
         "webpack-notifier": "^1.15.0"
@@ -23,6 +25,13 @@
     "dependencies": {
         "@tailwindcss/typography": "^0.5.15",
         "autoprefixer": "^10.4.20",
-        "postcss": "^8.4.47"
+        "bespoke": "^1.1.0",
+        "bespoke-bullets": "^1.1.0",
+        "bespoke-classes": "^1.0.0",
+        "bespoke-hash": "^1.1.0",
+        "bespoke-touch": "^1.0.0",
+        "lunr": "^2.3.9",
+        "postcss": "^8.4.47",
+        "preline": "^2.5.1"
     }
 }

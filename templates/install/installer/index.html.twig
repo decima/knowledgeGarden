@@ -5,10 +5,10 @@
 {% block body %}
     <div>
         {{ form_start(form) }}
+        {{ form_errors(form) }}
 
         <fieldset>
             <legend>General</legend>
-
             <label class="input input-bordered flex items-center gap-2">
                 {{ form_label(form.title) }}
                 {{ form_widget(form.title) }}
@@ -36,9 +36,62 @@
             </fieldset>
         {% endfor %}
 
+        <fieldset>
+            <legend>Search</legend>
+
+            <label class="flex items-center gap-2">
+                {{ form_widget(form.searchEngine.type, {attr:{class: "select select-bordered w-full"}}) }}
+
+            </label>
+
+            {{ form_widget(form.searchEngine.settings,{attr:{class:"settingsField"}}) }}
+            <div class="hidden" id="form-none">none selected, you can add this config later.</div>
+            <div class="hidden" id="form-local"></div>
+            <div class="hidden" id="form-meilisearch">
+                <label class="input input-bordered flex items-center gap-2" for="meili-url">
+                    Meilisearch URL
+                    <input class="subfield" name="meilisearchURL" type="text" id="meili-url"
+                           value="http://localhost:7700">
+                </label>
+                <label class="input input-bordered flex items-center gap-2" for="meili-index">
+                    Index Name
+                    <input class="subfield" name="meilisearchIndexName" type="text" id="meili-index"
+                           value="garden">
+                </label>
+                <label class="input input-bordered flex items-center gap-2" for="meili-token">
+                    Meilisearch Root token
+                    <input class="subfield" name="meilisearchRootToken" type="text" id="meili-token" value="devKey">
+                </label>
+                this token won't be saved. its only purpose if for creating a new Token on Meilisearch.
+
+            </div>
+        </fieldset>
 
         {{ form_rest(form) }}
         <button class="btn btn-primary" type="submit">Save</button>
         {{ form_end(form) }}
     </div>
+
+    <script>
+        let searchEngine = 'local';
+        searchEngine = changeSearchView();
+        document.querySelector("form").addEventListener("submit", (e) => {
+            let data = {};
+            for (let i of document.querySelectorAll(".subfield")) {
+                data[i.name] = i.value;
+            }
+
+            document.querySelector(".settingsField").value = JSON.stringify(data);
+        });
+
+
+        function changeSearchView(previous = null) {
+
+            const searchTypeChoice = document.querySelector("#install_searchEngine_type");
+            if (previous !== null)
+                document.querySelector('#form-' + previous).classList.add("hidden");
+            document.querySelector('#form-' + searchTypeChoice.value).classList.remove("hidden");
+            return searchTypeChoice.value;
+        }
+    </script>
 {% endblock %}

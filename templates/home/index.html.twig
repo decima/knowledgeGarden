@@ -1,62 +1,109 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}{{ app_title }} - {{ page.title }}{% endblock %}
 
 {% block body %}
-    <div class="flex flex-col md:flex-row min-h-screen">
-        <div class="md:w-2/12 bg-base-300 h-screen md:sticky top-0">
-            <nav id="mainMenu" class=" p-4 ">
-                <ul id="toc-details" class="p-2 menu">
+    <div class="page-layout">
+        <div class="main-menu">
+            <div class="heading-title">
+                <h1>{{ app_title }}</h1>
+                <a id="toggle-main-menu">
+                    <i class="ph ph-list"></i>
+                </a>
+            </div>
+            <div id="files-container" class="p-2 overflow-auto  hidden md:block">
+                <ul id="files-menu" class="menu menu-xs">
                     {% for item in fileList %}
                         {{ _self.toc(item) }}
                     {% endfor %}
                 </ul>
-            </nav>
+            </div>
         </div>
 
-        <div class="md:w-2/12 bg-base-200 h-screen md:sticky top-0">
-
-            <nav id="contextualMenu">
-
-                <ul class="flex flex-col h-screen max-h-screen flex flex-row p-4 box-border">
-                    <li>
-                        <a onclick="window.scrollTo(0, 0);"><i class="ph ph-arrow-line-up"></i><span>back to top</span></a>
-                    </li>
-                    <li>
-                        <a><i class="ph ph-presentation-chart"></i><span>Presentation</span></a>
-                    </li>
-                    <li><a><i class="ph ph-tree-view"></i><span>Table of content</span></a></li>
-                    <li class="overflow-auto">
-                        <ul id="toc-details" class="p-2 menu">
-                            {% for item in page.tableOfContent %}
-                                {{ _self.toc(item) }}
-                            {% endfor %}
-                        </ul>
-                    </li>
+        <div id="" class="context-menu">
+            <div id="contextual-menu-title" class="heading-title ">
+                <h1>{{ page.title }}</h1>
+                <a id="toggle-contextual-menu">
+                    <i class="ph ph-list"></i>
+                </a>
+            </div>
+            <div class="hidden md:block"><a
+                        onclick="document.querySelector('#page').scrollTo(0, 0);window.scrollTo(0, 0);">
+                    <i class="ph ph-arrow-line-up"></i>
+                    <span>back to top</span>
+                </a></div>
+            <div class="hidden md:block"><a id="start-presentation-button">
+                    <i class="ph ph-presentation-chart"></i>
+                    <span>Presentation</span>
+                </a></div>
+            <div class="hidden md:block">
+                table of contents
+            </div>
+            <div class="overflow-auto hidden md:block">
+                <ul id="toc-details" class="menu overflow-auto menu-xs">
+                    {% for item in page.tableOfContent %}
+                        {{ _self.toc(item) }}
+                    {% endfor %}
                 </ul>
-
-            </nav>
+            </div>
         </div>
-        <main class="md:w-8/12 p-4">
-            <h1 class="text-2xl uppercase font-black" id="__top">
+
+        <div id="page" class="bg-base-100 row-span-10 md:row-span-1 md:col-span-4 p-2 overflow-auto">
+            <h1 class="text-2xl uppercase font-black hidden md:block" id="__top">
                 {{ page.title }}
             </h1>
             <div class="layout prose max-w-none p-8">
                 {{ page.content|raw }}
             </div>
-        </main>
+        </div>
     </div>
+    <article id="presentation" class="top-0 left-0 absolute hidden h-screen w-screen bg-base-100 p-4 md:p-20">
+        <section class="hero bg-base-200 box-border h-full">
+            <div class="hero-content text-center">
+                <div class="max-w-md">
+                    <h1 class="text-5xl font-bold">{{ page.title }}</h1>
+                    {% if page.metadata.subtitle is defined %}
+                        <p class="py-6">
+                            {{ page.metadata.subtitle }}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+        {% for slide in page.toSlides() %}
+            <section class="prose max-w-none">
+                {% for subslide in slide %}
+                    <div class="subslide">
+                        {{ subslide|raw }}
+                    </div>
+                {% endfor %}
+            </section>
+        {% endfor %}
+    </article>
+    <script>function shouldBeOpen(e) {
+            console.log("wooooo", e);
+        }</script>
+
 
 {% endblock %}
 {% macro toc(item) %}
     <li>
-        <a id="{{ item.link }}" href="{{ item.link }}" class="toc-item {{ item.selected?"active":"" }}">{{ item.content|raw }}</a>
         {% if item.children %}
-            <ul>
-                {% for child in item.children %}
-                    {{ _self.toc(child) }}
-                {% endfor %}
-            </ul>
+            <details>
+                <summary class="col-span-2 treemenu" data-path="{{ item.link }}">
+                    <a id="{{ item.link }}" href="{{ item.link }}"
+                       class="{{ item.selected?"active":"" }} w-full">{{ item.content|raw }}</a>
+                </summary>
+                <ul>
+                    {% for child in item.children %}
+                        {{ _self.toc(child) }}
+                    {% endfor %}
+                </ul>
+            </details>
+        {% else %}
+
+            <a id="{{ item.link }}" href="{{ item.link }}"
+               class="toc-item {{ item.selected?"active":"" }}">{{ item.content|raw }}</a>
         {% endif %}
     </li>
 {% endmacro %}

@@ -8,8 +8,10 @@ use App\Services\Configuration\Configuration;
 use App\Services\Configuration\ConfigurationManager;
 use App\Services\Configuration\User;
 use App\Services\FileManager\FileExplorer;
+use App\Services\Search\mailisearch\MeiliClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\MakerBundle\Validator;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -43,6 +45,9 @@ class InstallerController extends AbstractController
                 $user->password = $hashed;
                 $user->eraseCredentials();
             }
+            MeiliClient::setup($configuration);
+
+
             $configurationManager->save();
             return $this->redirectToRoute("app_home");
         }

@@ -32,11 +32,14 @@ class MarkdownTemplater
         $metadata = MarkdownMetadata::extract($input);
         $input = ($converter->convert($input)->getContent());
 
-        return new Page($input, $this->makeTableOfContent($input), $metadata["title"] ?? $filename);
+        return new Page($input, $this->makeTableOfContent($input), $metadata["title"] ?? $filename, $metadata);
     }
 
     private function makeTableOfContent($input): array
     {
+        if (strlen($input) === 0) {
+            return [];
+        }
         $toc = [];
         $dom = new \DOMDocument();
         @$dom->loadHtml($input);
@@ -56,8 +59,8 @@ class MarkdownTemplater
             $lastElement = count($refDictionnary);
             $refDictionnary[] = [
                 "level" => $level,
-                "content" => ltrim($heading->textContent, "Â¶"),
-                "link" => $heading->childNodes?->item(0)?->attributes?->getNamedItem("href")?->textContent,
+                "content" => str_replace("¶", "", mb_convert_encoding($heading->textContent, 'ISO-8859-1', 'UTF-8')),
+                "link" => mb_convert_encoding($heading->childNodes?->item(0)?->attributes?->getNamedItem("href")?->textContent, 'ISO-8859-1', 'UTF-8'),
                 "children" => [],
                 "selected" => false,
             ];

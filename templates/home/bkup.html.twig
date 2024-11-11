@@ -1,0 +1,69 @@
+{% extends 'page.html.twig' %}
+
+{% block title %}{{ app_title }} - {{ page.title }}{% endblock %}
+
+{% block aside %}
+    <div class="flex justify-between items-center p-2  box-border">
+        <h1 class=" text-xl uppercase font-black">{{ app_title }}</h1>
+        <a class="btn md:hidden" onclick="document.querySelector('#main-menu').classList.toggle('hidden')"><i
+                    class="ph ph-list"></i></a>
+    </div>
+    <nav id="main-menu" class="p-4  box-border hidden md:block">
+        <ul id="toc-details" class="p-2 menu">
+            {% for item in fileList %}
+                {{ _self.toc(item) }}
+            {% endfor %}
+        </ul>
+    </nav>
+{% endblock %}
+{% block content %}
+    <div class=" md:w-1/5 bg-base-200 flex flex-col max-h-screen sticky top-0 overflow-hidden  min-h-0">
+        <div class=" flex justify-between items-center p-2 box-border   ">
+            <h1 class=" text-xl uppercase font-black">{{ page.title }}</h1>
+            <a class="btn  md:hidden" id="toggle-contextual-menu"
+               onclick="document.querySelector('#contextual-menu').classList.toggle('hidden')"><i
+                        class="ph ph-list"></i></a>
+        </div>
+        <div id="contextual-menu"
+             class="md:block h-96 flex flex-col box-border overflow-hidden min-h-0">
+            <div class="border-2 border-teal-400">
+                <div><a onclick="window.scrollTo(0, 0);"><i
+                                class="ph ph-arrow-line-up"></i><span>back to top</span></a></div>
+                <div><a><i class="ph ph-presentation-chart"></i><span>Presentation</span></a></div>
+            </div>
+            <div class="border-2  border-teal-400 grow-0">
+                <a class="text-lg"><i class="ph ph-tree-view"></i><span>Table of content</span></a>
+
+                <ul id="toc-details" class="menu overflow-auto">
+                    {% for item in page.tableOfContent %}
+                        {{ _self.toc(item) }}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <main class="p-4 md:w-4/5">
+        <h1 class="text-2xl uppercase font-black" id="__top">
+            {{ page.title }}
+        </h1>
+        <div class="layout prose max-w-none p-8">
+            {{ page.content|raw }}
+        </div>
+    </main>
+
+
+{% endblock %}
+{% macro toc(item) %}
+    <li>
+        <a id="{{ item.link }}" href="{{ item.link }}"
+           class="toc-item {{ item.selected?"active":"" }}">{{ item.content|raw }}</a>
+        {% if item.children %}
+            <ul>
+                {% for child in item.children %}
+                    {{ _self.toc(child) }}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </li>
+{% endmacro %}

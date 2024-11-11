@@ -92,7 +92,7 @@ class MarkdownRenderer
 
                 $path = "_templates/" . urlencode($templateName);
                 try {
-                    $subfileContent = $this->renderMarkdown($this->fileExplorer->getFile($path), $args);
+                    $subfileContent = $this->renderMarkdown($this->fileExplorer->getFileContent($path), $args);
 
                 } catch (\Exception $e) {
                     $builtins = __DIR__ . "/builtins";

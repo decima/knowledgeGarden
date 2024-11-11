@@ -2,6 +2,7 @@
 
 namespace App\Services\Configuration;
 
+use App\Services\Configuration\SearchEngineType;
 use App\Services\FileManager\FileExplorer;
 use PhpCsFixer\Config;
 use Symfony\Component\Filesystem\Exception\IOException;
@@ -28,7 +29,7 @@ class ConfigurationManager
 
     private function loadFromFile(): ?Configuration
     {
-        $content = $this->fileExplorer->getFile(self::configFile, true);
+        $content = $this->fileExplorer->getFileContent(self::configFile, true, true);
         $config = $this->serializer->deserialize($content, Configuration::class, 'yml');
         $config->inMemory = false;
         $validation = $this->validator->validate($config);
@@ -60,6 +61,7 @@ class ConfigurationManager
         // or instantiate new "in memory"
         $this->configuration = new Configuration();
         $user = new User();
+        $this->configuration->searchEngine = new SearchEngineConfiguration();
         $user->username = "admin";
         $user->permissions[] = "ROLE_ADMIN";
         $this->configuration->addUser($user);

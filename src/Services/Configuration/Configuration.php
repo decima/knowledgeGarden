@@ -4,7 +4,7 @@ namespace App\Services\Configuration;
 
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\NotEqualTo;
+use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Valid;
 
 class Configuration
@@ -18,6 +18,7 @@ class Configuration
     #[NotBlank]
     public string $title = 'garden';
 
+    public SearchEngineConfiguration $searchEngine;
 
     public string $copyright = "";
 
@@ -54,5 +55,9 @@ class Configuration
     public function setUsers(array $users)
     {
         $this->users = $users;
+    }
+
+    public function __construct()
+    {
     }
 }

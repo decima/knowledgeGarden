@@ -1,3 +1,62 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.prose img {
+    float: left;
+    max-width: 100px;
+}
+
+.main-menu {
+
+    @apply bg-base-200 p-2 grid grid-cols-1;
+}
+
+#toggle-main-menu {
+    @apply md:hidden;
+}
+
+#contextual-menu-title {
+    @apply md:hidden;
+}
+
+.context-menu {
+    @apply sticky top-0 max-h-screen;
+    @apply grid bg-base-300 p-2;
+}
+
+.main-menu-normal {
+    grid-template-rows: 80px 1fr;
+}
+
+.context-menu-normal {
+    grid-template-rows: 80px repeat(3, minmax(0, 30px)) 1fr;
+}
+
+.heading-title {
+    @apply flex justify-between items-center p-2 box-border;
+}
+
+.heading-title h1 {
+    @apply text-xl uppercase font-black;
+}
+
+.heading-title a {
+    @apply btn;
+}
+
+@media (min-width: 768px) {
+    .main-menu {
+        grid-template-rows: 80px 1fr;
+    }
+
+    .context-menu {
+        grid-template-rows: repeat(3, minmax(0, 30px)) 1fr;
+    }
+
+    .page-layout {
+        @apply h-screen;
+        @apply grid grid-cols-6 grid-rows-1 max-h-screen
+    }
+}

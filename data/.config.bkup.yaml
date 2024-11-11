@@ -1,0 +1,8 @@
+title: 'La super interface'
+copyright: ''
+users:
+  -
+    username: decima
+    password: $2y$13$Ly3A.wbVhBereb0IxRc.MeqIlzZm.9HlPcNm5LBaNpMxiN9Qj4GmK
+    permissions:
+      - ROLE_ADMIN

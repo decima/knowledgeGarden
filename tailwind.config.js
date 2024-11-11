@@ -4,7 +4,7 @@ module.exports = {
         "./assets/**/*.js",
         "./templates/**/*.html.twig",
         "./src/Services/Markdown/builtins/*",
-        "./data/**/*"
+        "./data/**/*",
     ],
     theme: {
         extend: {},
@@ -12,9 +12,10 @@ module.exports = {
     plugins: [
         require('@tailwindcss/typography'),
         require('daisyui'),
+        require('preline/plugin'),
     ],
     daisyui: {
-        themes: ["emerald"],
+        themes: ["light"],
     },
 }
 

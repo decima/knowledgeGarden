@@ -24,6 +24,8 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
             - '../src/Services/Configuration/Configuration.php'
+            - '../src/Services/Configuration/SearchEngineConfiguration.php'
+            - '../src/Services/Configuration/SearchEngineType.php'
 
 
     App\Services\Configuration\Configuration:
